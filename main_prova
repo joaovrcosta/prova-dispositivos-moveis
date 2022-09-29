@@ -1,0 +1,142 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: Home(),
+  ));
+}
+
+//home
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  String _info = "Por favor, insira teus dados";
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  TextEditingController valorController = TextEditingController();
+  TextEditingController contaController = TextEditingController();
+
+  //fields
+  void _resetFields() {
+    valorController.text = '';
+    contaController.text = '';
+    setState(() {
+      _info = "Insira teus dados.";
+      _formKey = GlobalKey<FormState>();
+    });
+  }
+
+  void _promo() {
+    setState(() {
+      double total = double.parse(valorController.text);
+      int conta = int.parse(contaController.text);
+      double promoTotal;
+
+      switch (conta) {
+        case 1:
+          promoTotal = total;
+          _info = 'Cliente sem desconto: ($promoTotal)';
+          break;
+        case 2:
+          promoTotal = total - total * 10 / 100;
+          _info = 'Nosso funcionario 10% de desconto: ($promoTotal)';
+          break;
+        case 3:
+          promoTotal = total - total * 5 / 100;
+          _info = 'Cliente vip 5% de desconto: ($promoTotal)';
+          break;
+        default:
+          promoTotal = total;
+          _info = 'este valor é invalido: ($promoTotal)';
+      }
+
+      print(promoTotal);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Aplicar promoção"),
+          centerTitle: true,
+          backgroundColor: Color.fromARGB(255, 222, 253, 85),
+          actions: <Widget>[
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _resetFields)
+          ],
+        ),
+        backgroundColor: Colors.black,
+        body: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  const Icon(Icons.person_outline,
+                      size: 120.0, color: Color.fromARGB(255, 200, 255, 70)),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        labelText: "Preço do produto",
+                        labelStyle: TextStyle(color: Color.fromARGB(255, 79, 214, 151))),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Color.fromARGB(255, 50, 228, 154), fontSize: 14.0),
+                    controller: valorController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Coloque o valor do item";
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        labelText: "Categoria de cliente",
+                        labelStyle: TextStyle(color: Color.fromARGB(255, 160, 224, 87))),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Color.fromARGB(255, 110, 253, 186), fontSize: 14.0),
+                    controller: contaController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Insira o tipo da conta";
+                      }
+                      return null;
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                    child: SizedBox(
+                      height: 20,
+                      child: RaisedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _promo();
+                          }
+                        },
+                        color: Color.fromARGB(255, 48, 196, 92),
+                        child: const Text(
+                          'Calcular desconto',
+                          style: TextStyle(color: Color.fromARGB(255, 44, 44, 44), fontSize: 14.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _info,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Color.fromARGB(255, 87, 241, 133), fontSize: 25),
+                  )
+                ],
+              ),
+            )));
+  }
+}
